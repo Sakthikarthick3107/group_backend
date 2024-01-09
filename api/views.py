@@ -14,13 +14,20 @@ class CollegeEventView(APIView):
 
 class RegisterView(APIView):
     def post(self,request):
-        entry = RegisterSerializer(data=request.data)
-        if entry.is_valid():
-            event = CollegeEvents.objects.get(event_id = entry.validated_data['event_id'])
-            event['event_id'] -= 1
-            event.save()
-            entry.save()
-            return Response({'message':'Registered Successfully'})
+        participant = RegisterSerializer(data=request.data)
+        if participant.is_valid():
+            participant.save()
+            specific_event = CollegeEvents.objects.get(event_id = participant.validated_data['event_id'] )
+            if specific_event.seats == 0:
+                return Response({'message':'No seats available for this event!'})
+            else:
+                specific_event.seats -= 1
+                specific_event.save()
+                return Response({
+                    'message':'Registered Successfully',
+                    'data': participant.data
+                    
+                    })
             
-            
+        return Response({'message':'Try again'})   
         

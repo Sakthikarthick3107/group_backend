@@ -13,6 +13,10 @@ class CollegeEventView(APIView):
         return Response(serialize.data)
 
 class RegisterView(APIView):
+    def get(self,request):
+        participants = Register.objects.all()
+        serialize = RegisterSerializer(participants , many=True)
+        return Response(serialize.data)
     def post(self,request):
         participant = RegisterSerializer(data=request.data)
         if participant.is_valid():
